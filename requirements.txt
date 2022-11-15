@@ -1,0 +1,8 @@
+os
+numpy
+pandas
+opencv-python
+imutils
+matplotlib
+argparse
+scipy
