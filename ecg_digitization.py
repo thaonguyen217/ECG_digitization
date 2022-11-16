@@ -85,7 +85,7 @@ def detact_leads(img, bl):
 
 	return l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12
 
-def remove_redundant_lead(im, gap=40):
+def remove_redundant_lead(im, gap=20):
 	bl = np.argmax(histogram(im, 0))
 	im_ = 255*np.ones_like(im)
 	for r in range(3):
@@ -102,7 +102,7 @@ def remove_redundant_lead(im, gap=40):
 		col_ = np.where(im[:, pt]==0)[0]
 		pos= []
 		for i in range(len(col_)):
-			if col_[i] < bl-15 or col_[i] > bl+15:
+			if col_[i] < bl-gap or col_[i] > bl+gap:
 				pos.append(i)
 		col_ = np.delete(col_, pos)
 		im_[col_, pt] = 0
