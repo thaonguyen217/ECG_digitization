@@ -62,8 +62,8 @@ def detact_leads(img, bl):
 		if hh[i] > 3:
 			en = i
 			break
-	img = img[:, 50+st:50+en]
-	N = 50
+	img = img[:, st+50:en+50]
+	N = 60
 	L = img.shape[1]//4
 	l0 = img[bl[0]-gap:bl[0]+gap, N:L]
 	l1 = img[bl[1]-gap:bl[1]+gap, N:L]
@@ -85,10 +85,18 @@ def detact_leads(img, bl):
 
 	return l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12
 
+def check_identical(m1, m2):
+    for i in range(m1.shape[0]):
+        for j in range(m1.shape[1]):
+            if m1[i,j] != m2[i,j]:
+                return False
+    return True
+
 def remove_redundant_lead(im, gap=20):
 	bl = np.argmax(histogram(im, 0))
 	im_ = 255*np.ones_like(im)
-	for r in range(3):
+	while True:
+		im_cp = im_.copy()
 		pt, cnt = 0, 0
 		while True:
 			x = np.random.randint(im.shape[1])
@@ -100,7 +108,7 @@ def remove_redundant_lead(im, gap=20):
 				break
 			
 		col_ = np.where(im[:, pt]==0)[0]
-		pos= []
+		pos = []
 		for i in range(len(col_)):
 			if col_[i] < bl-gap or col_[i] > bl+gap:
 				pos.append(i)
@@ -119,9 +127,9 @@ def remove_redundant_lead(im, gap=20):
 				mask = np.where(im[0:im.shape[0], i]==0)[0]
 			im_[mask, i] = 0
 			if len(mask) != 0:
-        			amax, amin = max(mask), min(mask)
-    			else:
-        			pass
+				amax, amin = max(mask), min(mask)
+			else:
+				amax, amin = amax + gap, amin +gap
 
 		amax, amin = max(col_), min(col_)
 		for i in range(pt-1, -1, -1):
@@ -136,10 +144,18 @@ def remove_redundant_lead(im, gap=20):
 
 			im_[mask, i] = 0
 			if len(mask) != 0:
-        			amax, amin = max(mask), min(mask)
-    			else:
-        			pass
-		return im_ 
+				amax, amin = max(mask), min(mask)
+			else:
+				amax, amin = amax + gap, amin +gap
+				
+		flag = True
+		for i in range(im_.shape[1]-5):
+			cols = im_[:, i:i+5]
+			if check_identical(cols, 255*np.ones_like(cols)):
+				flag = False
+		if check_identical(im_cp, im_) and flag:
+			break
+		return im_
 
 def digitization0(im, w=40, h=80, fs=20):
 	im = im[:, 20:im.shape[1]-20]
@@ -164,22 +180,22 @@ def digitization(f):
 	im, warped = read_img(f)
 	bl = find_baseline(im)
 	w, h = 40, 80
+	g = 20
 
 	l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12 = detact_leads(im, bl)
-
-	ll0 = remove_redundant_lead(l0, gap=20); ll0 = cv2.medianBlur(ll0, 3); sig0 = digitization0(ll0, w, h)
-	ll1 = remove_redundant_lead(l1, gap=20); ll1 = cv2.medianBlur(ll1, 3); sig1 = digitization0(ll1, w, h)
-	ll2 = remove_redundant_lead(l2, gap=20); ll2 = cv2.medianBlur(ll2, 3); sig2 = digitization0(ll2, w, h)
-	ll3 = remove_redundant_lead(l3, gap=20); ll3 = cv2.medianBlur(ll3, 3); sig3 = digitization0(ll3, w, h)
-	ll4 = remove_redundant_lead(l4, gap=20); ll4 = cv2.medianBlur(ll4, 3); sig4 = digitization0(ll4, w, h)
-	ll5 = remove_redundant_lead(l5, gap=20); ll5 = cv2.medianBlur(ll5, 3); sig5 = digitization0(ll5, w, h)
-	ll6 = remove_redundant_lead(l6, gap=20); ll6 = cv2.medianBlur(ll6, 3); sig6 = digitization0(ll6, w, h)
-	ll7 = remove_redundant_lead(l7, gap=20); ll7 = cv2.medianBlur(ll7, 3); sig7 = digitization0(ll7, w, h)
-	ll8 = remove_redundant_lead(l8, gap=20); ll8 = cv2.medianBlur(ll8, 3); sig8 = digitization0(ll8, w, h)
-	ll9 = remove_redundant_lead(l9, gap=20); ll9 = cv2.medianBlur(ll9, 3); sig9 = digitization0(ll9, w, h)
-	ll10 = remove_redundant_lead(l10, gap=20); ll10 = cv2.medianBlur(ll10, 3); sig10 = digitization0(ll10, w, h)
-	ll11 = remove_redundant_lead(l11, gap=20); ll11 = cv2.medianBlur(ll11, 3); sig11 = digitization0(ll11, w, h)
-	ll12 = remove_redundant_lead(l12, gap=20); ll12 = cv2.medianBlur(ll12, 3); sig12 = digitization0(ll12, w, h)
+	ll0 = remove_redundant_lead(l0, gap=g); ll0 = cv2.medianBlur(ll0, 3); sig0 = digitization0(ll0, w, h)
+	ll1 = remove_redundant_lead(l1, gap=g); ll1 = cv2.medianBlur(ll1, 3); sig1 = digitization0(ll1, w, h)
+	ll2 = remove_redundant_lead(l2, gap=g); ll2 = cv2.medianBlur(ll2, 3); sig2 = digitization0(ll2, w, h)
+	ll3 = remove_redundant_lead(l3, gap=g); ll3 = cv2.medianBlur(ll3, 3); sig3 = digitization0(ll3, w, h)
+	ll4 = remove_redundant_lead(l4, gap=g); ll4 = cv2.medianBlur(ll4, 3); sig4 = digitization0(ll4, w, h)
+	ll5 = remove_redundant_lead(l5, gap=g); ll5 = cv2.medianBlur(ll5, 3); sig5 = digitization0(ll5, w, h)
+	ll6 = remove_redundant_lead(l6, gap=g); ll6 = cv2.medianBlur(ll6, 3); sig6 = digitization0(ll6, w, h)
+	ll7 = remove_redundant_lead(l7, gap=g); ll7 = cv2.medianBlur(ll7, 3); sig7 = digitization0(ll7, w, h)
+	ll8 = remove_redundant_lead(l8, gap=g); ll8 = cv2.medianBlur(ll8, 3); sig8 = digitization0(ll8, w, h)
+	ll9 = remove_redundant_lead(l9, gap=g); ll9 = cv2.medianBlur(ll9, 3); sig9 = digitization0(ll9, w, h)
+	ll10 = remove_redundant_lead(l10, gap=g); ll10 = cv2.medianBlur(ll10, 3); sig10 = digitization0(ll10, w, h)
+	ll11 = remove_redundant_lead(l11, gap=g); ll11 = cv2.medianBlur(ll11, 3); sig11 = digitization0(ll11, w, h)
+	ll12 = remove_redundant_lead(l12, gap=g); ll12 = cv2.medianBlur(ll12, 3); sig12 = digitization0(ll12, w, h)
 
 	N = len(sig0)
 	sig = np.zeros((12, N))
