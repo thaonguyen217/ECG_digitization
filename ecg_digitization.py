@@ -118,10 +118,10 @@ def remove_redundant_lead(im, gap=20):
 			else:
 				mask = np.where(im[0:im.shape[0], i]==0)[0]
 			im_[mask, i] = 0
-			try:
-				amax, amin = max(mask), min(mask)
-			except:
-				pass
+			if len(mask) != 0:
+        			amax, amin = max(mask), min(mask)
+    			else:
+        			pass
 
 		amax, amin = max(col_), min(col_)
 		for i in range(pt-1, -1, -1):
@@ -135,10 +135,10 @@ def remove_redundant_lead(im, gap=20):
 				mask = np.where(im[0:im.shape[0], i]==0)[0]
 
 			im_[mask, i] = 0
-			try:
-				amax, amin = max(mask), min(mask)
-			except:
-				pass
+			if len(mask) != 0:
+        			amax, amin = max(mask), min(mask)
+    			else:
+        			pass
 		return im_ 
 
 def digitization0(im, w=40, h=80, fs=20):
