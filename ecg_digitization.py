@@ -96,7 +96,6 @@ def remove_redundant_lead(im, gap=20):
 	bl = np.argmax(histogram(im, 0))
 	im_ = 255*np.ones_like(im)
 	while True:
-		im_cp = im_.copy()
 		pt, cnt = 0, 0
 		while True:
 			x = np.random.randint(im.shape[1])
