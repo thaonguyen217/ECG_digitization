@@ -149,32 +149,33 @@ def remove_redundant_lead(im, gap=20):
 				amax, amin = amax + gap, amin +gap
 				
 		flag = True
-		for i in range(im_.shape[1]-5):
-			cols = im_[:, i:i+5]
+		for i in range(im_.shape[1]-10):
+			cols = im_[:, i:i+10]
 			if check_identical(cols, 255*np.ones_like(cols)):
 				flag = False
-		if check_identical(im_cp, im_) and flag:
-			break
-		return im_
+				break
+		if flag: # and check_identical(im_, im_cp):
+			return im_
 
-def digitization0(im, w=40, h=80, fs=20):
-	im = im[:, 20:im.shape[1]-20]
+def amplitude(im, w=40, h=80, fs=20):
 	hist = histogram(im, 0)
 	bl = np.argmax(hist)
 
 	sig = []
+	m = bl
 	for i in range(im.shape[1]):
 		col = im[:, i]
 		if len(np.where(col==0)[0]) != 0:
 			mag = np.mean(np.where(col==0)[0])
+			m = mag.copy()
 		else:
-			mag = bl
+			mag = m
 		sig.append(mag)
 	sig = (np.array(sig) - bl)/h
 
 	n_samples = int(fs*im.shape[1]/w)
 	sig = resample(sig, n_samples)
-	return 1-sig
+	return -sig
 
 def digitization(f):
 	im, warped = read_img(f)
@@ -183,19 +184,19 @@ def digitization(f):
 	g = 20
 
 	l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12 = detact_leads(im, bl)
-	ll0 = remove_redundant_lead(l0, gap=g); ll0 = cv2.medianBlur(ll0, 3); sig0 = digitization0(ll0, w, h)
-	ll1 = remove_redundant_lead(l1, gap=g); ll1 = cv2.medianBlur(ll1, 3); sig1 = digitization0(ll1, w, h)
-	ll2 = remove_redundant_lead(l2, gap=g); ll2 = cv2.medianBlur(ll2, 3); sig2 = digitization0(ll2, w, h)
-	ll3 = remove_redundant_lead(l3, gap=g); ll3 = cv2.medianBlur(ll3, 3); sig3 = digitization0(ll3, w, h)
-	ll4 = remove_redundant_lead(l4, gap=g); ll4 = cv2.medianBlur(ll4, 3); sig4 = digitization0(ll4, w, h)
-	ll5 = remove_redundant_lead(l5, gap=g); ll5 = cv2.medianBlur(ll5, 3); sig5 = digitization0(ll5, w, h)
-	ll6 = remove_redundant_lead(l6, gap=g); ll6 = cv2.medianBlur(ll6, 3); sig6 = digitization0(ll6, w, h)
-	ll7 = remove_redundant_lead(l7, gap=g); ll7 = cv2.medianBlur(ll7, 3); sig7 = digitization0(ll7, w, h)
-	ll8 = remove_redundant_lead(l8, gap=g); ll8 = cv2.medianBlur(ll8, 3); sig8 = digitization0(ll8, w, h)
-	ll9 = remove_redundant_lead(l9, gap=g); ll9 = cv2.medianBlur(ll9, 3); sig9 = digitization0(ll9, w, h)
-	ll10 = remove_redundant_lead(l10, gap=g); ll10 = cv2.medianBlur(ll10, 3); sig10 = digitization0(ll10, w, h)
-	ll11 = remove_redundant_lead(l11, gap=g); ll11 = cv2.medianBlur(ll11, 3); sig11 = digitization0(ll11, w, h)
-	ll12 = remove_redundant_lead(l12, gap=g); ll12 = cv2.medianBlur(ll12, 3); sig12 = digitization0(ll12, w, h)
+	ll0 = remove_redundant_lead(l0, gap=g); ll0 = cv2.medianBlur(ll0, 3); sig0 = amplitude(ll0, w, h)
+	ll1 = remove_redundant_lead(l1, gap=g); ll1 = cv2.medianBlur(ll1, 3); sig1 = amplitude(ll1, w, h)
+	ll2 = remove_redundant_lead(l2, gap=g); ll2 = cv2.medianBlur(ll2, 3); sig2 = amplitude(ll2, w, h)
+	ll3 = remove_redundant_lead(l3, gap=g); ll3 = cv2.medianBlur(ll3, 3); sig3 = amplitude(ll3, w, h)
+	ll4 = remove_redundant_lead(l4, gap=g); ll4 = cv2.medianBlur(ll4, 3); sig4 = amplitude(ll4, w, h)
+	ll5 = remove_redundant_lead(l5, gap=g); ll5 = cv2.medianBlur(ll5, 3); sig5 = amplitude(ll5, w, h)
+	ll6 = remove_redundant_lead(l6, gap=g); ll6 = cv2.medianBlur(ll6, 3); sig6 = amplitude(ll6, w, h)
+	ll7 = remove_redundant_lead(l7, gap=g); ll7 = cv2.medianBlur(ll7, 3); sig7 = amplitude(ll7, w, h)
+	ll8 = remove_redundant_lead(l8, gap=g); ll8 = cv2.medianBlur(ll8, 3); sig8 = amplitude(ll8, w, h)
+	ll9 = remove_redundant_lead(l9, gap=g); ll9 = cv2.medianBlur(ll9, 3); sig9 = amplitude(ll9, w, h)
+	ll10 = remove_redundant_lead(l10, gap=g); ll10 = cv2.medianBlur(ll10, 3); sig10 = amplitude(ll10, w, h)
+	ll11 = remove_redundant_lead(l11, gap=g); ll11 = cv2.medianBlur(ll11, 3); sig11 = amplitude(ll11, w, h)
+	ll12 = remove_redundant_lead(l12, gap=g); ll12 = cv2.medianBlur(ll12, 3); sig12 = amplitude(ll12, w, h)
 
 	N = len(sig0)
 	sig = np.zeros((12, N))
