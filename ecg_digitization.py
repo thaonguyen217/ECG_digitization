@@ -37,14 +37,6 @@ def find_baseline(img):
 	[bl0, bl1, bl2, bl3] = np.sort(np.array(peaks[np.argsort(temp)[-4:]]))
 	return [bl0+400, bl1+400, bl2+400, bl3+400]
 
-def noise_removement(ll):
-	for i in range(1, ll.shape[0]-1):
-		for j in range(1, ll.shape[1]-1):
-			arr = ll[i-1:i+2, j-1:j+2]
-			if len(np.where(arr==0)[0]) <= 1:
-				ll[i, j] = 255
-	return ll
-
 def detact_leads(img, bl):
 	gap = []
 	for i in range(len(bl)-1):
