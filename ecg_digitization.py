@@ -87,7 +87,9 @@ def check_identical(m1, m2):
 def remove_redundant_lead(im, gap=20):
 	bl = np.argmax(histogram(im, 0))
 	im_ = 255*np.ones_like(im)
+	count = 0
 	while True:
+		count += 1
 		pt, cnt = 0, 0
 		while True:
 			x = np.random.randint(im.shape[1])
@@ -145,7 +147,7 @@ def remove_redundant_lead(im, gap=20):
 			if check_identical(cols, 255*np.ones_like(cols)):
 				flag = False
 				break
-		if flag: # and check_identical(im_, im_cp):
+		if flag or count > 100:
 			return im_
 
 def amplitude(im, w=40, h=80, fs=20):
