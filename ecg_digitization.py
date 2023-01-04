@@ -147,7 +147,7 @@ def remove_redundant_lead(im, gap=20):
 			if check_identical(cols, 255*np.ones_like(cols)):
 				flag = False
 				break
-		if flag or count > 100:
+		if flag or count > 30:
 			return im_
 
 def amplitude(im, w=40, h=80, fs=20):
