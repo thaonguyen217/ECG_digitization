@@ -66,16 +66,15 @@ def perspective_transform(imagepath):
 	# Step 1: EDGE DETECTION
 	image = cv2.imread(imagepath)
 	orig = image.copy()
-
-	# convert the image to grayscale and find edges
-	# in the image
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	blur = cv2.GaussianBlur(gray, (7, 7), 0)
-	edged = cv2.Canny(blur, 75, 200)
+	kernel = np.ones((5,5),np.uint8)
+	image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel, iterations= 3)
+	
+	blur = cv2.GaussianBlur(image, (7, 7), 0)
+	edged = cv2.Canny(blur, 50, 100)
+	edged = cv2.dilate(edged, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
 
 	# Step 2: FINDING CONTOURS
-	# find the contours in the edged image, keeping only the
-	# largest ones, and initialize the screen contour
+	# find the contours in the edged image, keeping only the largest ones, and initialize the screen contour
 	cnts = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 	cnts = imutils.grab_contours(cnts)
 	cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:5]
