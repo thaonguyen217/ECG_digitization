@@ -16,6 +16,7 @@ def read_img(f):
 	_, im = cv2.threshold(im, 128, 255, cv2.THRESH_OTSU)
 	kernel = np.ones((3, 3), np.uint8)
 	im = cv2.erode(im, kernel) 
+	im = im[50:im.shape[0]-50, 50:im.shape[1]-50]
 	return im, warped
 
 def histogram(arr, axis=0):
@@ -77,13 +78,6 @@ def detact_leads(img, bl):
 
 	return l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12
 
-def check_identical(m1, m2):
-    for i in range(m1.shape[0]):
-        for j in range(m1.shape[1]):
-            if m1[i,j] != m2[i,j]:
-                return False
-    return True
-
 def remove_redundant_lead(im, gap=20):
 	bl = np.argmax(histogram(im, 0))
 	im_ = 255*np.ones_like(im)
@@ -144,7 +138,7 @@ def remove_redundant_lead(im, gap=20):
 		flag = True
 		for i in range(im_.shape[1]-10):
 			cols = im_[:, i:i+10]
-			if check_identical(cols, 255*np.ones_like(cols)):
+			if np.array_equal(cols, 255*np.ones_like(cols)):
 				flag = False
 				break
 		if flag or count > 30:
@@ -176,11 +170,11 @@ def cut_img(im):
 	st, en = 0, im.shape[1]
 	for i in range(0, bl-10):
 		rows = im[i:i+10, :]
-		if check_identical(rows, 255*np.ones_like(rows)):
+		if np.array_equal(rows, 255*np.ones_like(rows)):
 			st = i
 	for i in range(bl, im.shape[0]-10):
 		rows = im[i:i+10, :]
-		if check_identical(rows, 255*np.ones_like(rows)):
+		if np.array_equal(rows, 255*np.ones_like(rows)):
 			en = i
 			break
 	im = im[st:en, :]
