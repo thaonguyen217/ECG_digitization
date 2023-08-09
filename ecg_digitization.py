@@ -186,6 +186,8 @@ def digitization(f):
 	w, h = 40, 80
 	g = 20
 
+	l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12 = detact_leads(im, bl)
+
 	ll0 = cv2.medianBlur(l0, 3); ll0 = remove_redundant_lead(ll0, gap=g); ll0 = cut_img(ll0); sig0 = amplitude(ll0, w, h)
 	ll1 = cv2.medianBlur(l1, 3); ll1 = remove_redundant_lead(ll1, gap=g); ll1 = cut_img(ll1); sig1 = amplitude(ll1, w, h)
 	ll2 = cv2.medianBlur(l2, 3); ll2 = remove_redundant_lead(ll2, gap=g); ll2 = cut_img(ll2); sig2 = amplitude(ll2, w, h)
